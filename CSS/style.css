@@ -1,0 +1,11 @@
+.flex {
+    display: flex;
+}
+
+.flex label {
+    margin: 0px 10px;
+}
+
+.flex div {
+    margin: 0px 10px;
+}

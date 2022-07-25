@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./CSS/style.css">
+    <title>compressTool</title>
+</head>
+
+<body>
+    <div class="flex">
+        <!-- 圧縮前 -->
+        <div>
+            <label for="before">圧縮前</label>
+            <div class="compressInput">
+                <textarea id="input" cols="50" rows="50" name="before"></textarea>
+            </div>
+        </div>
+
+        <!-- 圧縮後 -->
+        <div>
+            <label for="after">圧縮後</label>
+            <div class="compressOutput">
+                <textarea id="output" cols="50" rows="50" name="after"></textarea>
+            </div>
+        </div>
+    </div>
+    <script src="./JS/compress.js"></script>
+</body>
+
+</html>
