@@ -6,29 +6,35 @@ document.getElementById('input').addEventListener('change', () => {
 });
 
 function compress(targetCompressArr) {
-    console.log("圧縮します" + targetCompressArr);
-    const arrOfSameLength = sameLengthOfCreateArr(targetCompressArr[0], targetCompressArr);
-    console.log(arrOfSameLength);
-    const afterComparisonObj = oneToManyComparison(targetCompressArr[0], arrOfSameLength);
-    console.log(afterComparisonObj);
-    const formattedObj = formatInsideTheObject(afterComparisonObj);
+    console.log(targetCompressArr);
+    const arrOfSameLength = sameLengthOfCreateArr(targetCompressArr[0], targetCompressArr); // 同じ文字列の配列を作成
+    const afterComparisonObj = oneToManyComparison(targetCompressArr[0], arrOfSameLength); // 比較したオブジェクトを生成
+    const formattedObj = formatInsideTheObject(afterComparisonObj); //afterComparsionObj内のかぶったものを削除したオブジェクトを生成
+    console.log(formattedObj);
     if (formattedObj.length) {
-        const sameDiffPositon = arrWithmatchPosition(formattedObj);
-        targetCompressArr.push(createCompressString(targetCompressArr[0], sameDiffPositon));
-
-        const sameDiffPositonArr = sameDiffPositon.map(item => {
-            return item.diffString;
-        });
-        sameDiffPositonArr.push(targetCompressArr[0]);
-        console.log(sameDiffPositonArr);
-        console.log(targetCompressArr);
-        const DiffArr = targetCompressArr.filter(value => {
-            return sameDiffPositonArr.indexOf(value) === -1;
-        });
-        if (DiffArr.length) {
-            return compress(DiffArr);
+        const sameDiffPositon = arrWithmatchPosition(formattedObj); // 同じ位置のオブジェクトを生成
+        console.log(sameDiffPositon);
+        if (!sameDiffPositon.length) {
+            const leadString = targetCompressArr.shift();
+            targetCompressArr.push(leadString);
+            console.log(targetCompressArr);
+            return compress(targetCompressArr);
+        } else {
+            targetCompressArr.push(createCompressString(targetCompressArr[0], sameDiffPositon));
+            const sameDiffPositonArr = sameDiffPositon.map(item => {
+                return item.diffString;
+            });
+            sameDiffPositonArr.push(targetCompressArr[0]); //配列の先頭を代入
+            const DiffArr = targetCompressArr.filter(value => {
+                return sameDiffPositonArr.indexOf(value) === -1;
+            });
+            if (DiffArr.length) {
+                console.log(DiffArr);
+                return compress(DiffArr);
+            }
         }
     }
+
     return targetCompressArr.sort();
 }
 
@@ -89,14 +95,17 @@ function arrWithmatchPosition(beforeShapingObj) {
 
 //圧縮文字を生成する
 function createCompressString(compressionTarget, compressObj) {
-    const targetCompressedString = compressionTarget.slice(compressObj[0].diffPosition, compressObj[0].diffPosition + 1);
-    const stringBeforeCompression = compressionTarget.slice(0, compressObj[0].diffPosition);
-    const stringAfterCompression = compressionTarget.slice(compressObj[0].diffPosition + 1);
-    const compressStrings = compressObj.map(compressMoji => {
-        return compressMoji.diffMoji;
-    }).join("");
-
-    return stringBeforeCompression + '[' + targetCompressedString + compressStrings + ']' + stringAfterCompression;
+    if (compressObj.length) {
+        const targetCompressedString = compressionTarget.slice(compressObj[0].diffPosition, compressObj[0].diffPosition + 1);
+        const stringBeforeCompression = compressionTarget.slice(0, compressObj[0].diffPosition);
+        const stringAfterCompression = compressionTarget.slice(compressObj[0].diffPosition + 1);
+        const compressStrings = compressObj.map(compressMoji => {
+            return compressMoji.diffMoji;
+        }).join("");
+        return stringBeforeCompression + '[' + targetCompressedString + compressStrings + ']' + stringAfterCompression;
+    } else {
+        return compressionTarget;
+    }
 }
 
 /* メモ */
