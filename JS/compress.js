@@ -10,14 +10,11 @@ function compress(targetCompressArr) {
     const arrOfSameLength = sameLengthOfCreateArr(targetCompressArr[0], targetCompressArr); // 同じ文字列の配列を作成
     const afterComparisonObj = oneToManyComparison(targetCompressArr[0], arrOfSameLength); // 比較したオブジェクトを生成
     const formattedObj = formatInsideTheObject(afterComparisonObj); //afterComparsionObj内のかぶったものを削除したオブジェクトを生成
-    console.log(formattedObj);
     if (formattedObj.length) {
         const sameDiffPositon = arrWithmatchPosition(formattedObj); // 同じ位置のオブジェクトを生成
-        console.log(sameDiffPositon);
         if (!sameDiffPositon.length) {
             const leadString = targetCompressArr.shift();
             targetCompressArr.push(leadString);
-            console.log(targetCompressArr);
             return compress(targetCompressArr);
         } else {
             targetCompressArr.push(createCompressString(targetCompressArr[0], sameDiffPositon));
@@ -29,7 +26,6 @@ function compress(targetCompressArr) {
                 return sameDiffPositonArr.indexOf(value) === -1;
             });
             if (DiffArr.length) {
-                console.log(DiffArr);
                 return compress(DiffArr);
             }
         }
@@ -102,15 +98,35 @@ function createCompressString(compressionTarget, compressObj) {
         const compressStrings = compressObj.map(compressMoji => {
             return compressMoji.diffMoji;
         }).join("");
-        return stringBeforeCompression + '[' + targetCompressedString + compressStrings + ']' + stringAfterCompression;
+        const omitString = omitCompressCharacter(targetCompressedString + compressStrings);
+        return stringBeforeCompression + '[' + omitString + ']' + stringAfterCompression;
     } else {
         return compressionTarget;
     }
 }
 
-/* メモ */
-// const arrOfSameLength = sameLengthOfCreateArr(beforeCompressArr[0], beforeCompressArr);
-// const afterComparisonObj = oneToManyComparison(beforeCompressArr[0], arrOfSameLength);
-// const formattedObj = formatInsideTheObject(afterComparisonObj);
-// const sameDiffPositon = arrWithmatchPosition(formattedObj);
-// const compressString = createCompressString(beforeCompressArr[0], sameDiffPositon);
+function omitCompressCharacter(omitString) {
+    let omitResultStrings = "";
+    let omitStringArr = [...omitString].sort();
+    let omitStrings = omitStringArr[0];
+
+    for (let i = 1; i < omitStringArr.length; i++) {
+        if (~(omitStringArr[i - 1].charCodeAt(0) - omitStringArr[i].charCodeAt(0))) {
+            omissionDecision(omitStrings);
+            omitStrings = omitStringArr[i];
+        } else {
+            omitStrings += omitStringArr[i];
+        }
+    }
+
+    omissionDecision(omitStrings);
+
+    function omissionDecision(str) {
+        if (str.length > 2) {
+            omitResultStrings += str.slice(0, 1) + "-" + str.slice(-1);
+        } else {
+            omitResultStrings += str;
+        }
+    }
+    return omitResultStrings;
+}
